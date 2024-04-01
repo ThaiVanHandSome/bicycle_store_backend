@@ -1,0 +1,13 @@
+package vn.iostar.springbootbackend.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import vn.iostar.springbootbackend.entity.Bicycle;
+import vn.iostar.springbootbackend.entity.BicycleImage;
+
+import java.util.List;
+
+@Repository
+public interface BicycleImageRepository extends JpaRepository<BicycleImage, Long> {
+    List<BicycleImage> findByBicycle(Bicycle bicycle);
+}

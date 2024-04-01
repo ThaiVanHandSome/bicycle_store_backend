@@ -6,7 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.iostar.springbootbackend.entity.Role;
-import vn.iostar.springbootbackend.entity.UserEntity;
+import vn.iostar.springbootbackend.entity.User;
 import vn.iostar.springbootbackend.repository.UserRepository;
 import vn.iostar.springbootbackend.security.jwt.JWTService;
 
@@ -22,9 +22,9 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     public RegisterResponse register(RegisterRequest request) {
-        Optional<UserEntity> optUser = repository.findByEmail(request.getEmail());
+        Optional<User> optUser = repository.findByEmail(request.getEmail());
         if(optUser.isEmpty()) {
-            var user = UserEntity.builder()
+            var user = User.builder()
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())
                     .email(request.getEmail())

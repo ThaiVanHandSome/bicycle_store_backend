@@ -2,7 +2,6 @@ package vn.iostar.springbootbackend.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +11,8 @@ import vn.iostar.springbootbackend.entity.Bicycle;
 import vn.iostar.springbootbackend.entity.BicycleCategory;
 import vn.iostar.springbootbackend.entity.BicyclesOfCategory;
 import vn.iostar.springbootbackend.model.BicycleCategoryModel;
-import vn.iostar.springbootbackend.model.Response;
+import vn.iostar.springbootbackend.model.BicycleModel;
+import vn.iostar.springbootbackend.model.response.BaseResponse;
 import vn.iostar.springbootbackend.service.impl.BicycleCategoryService;
 import vn.iostar.springbootbackend.service.impl.BicyclesOfCategoryService;
 
@@ -39,25 +39,21 @@ public class BicycleCategoryController {
             model.setCountOfBicycles(cnt);
             listCategories.add(model);
         }
-        Response res = new Response();
-        res.setStatus(200);
-        res.setMessage("Get Categories Successfully");
-        res.setData(listCategories);
-        return ResponseEntity.ok(res);
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listCategories).message("Get All Categories Successfully!").errors(null).build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/{id}/bicycles")
     public ResponseEntity<?> getBicyclesByCategory(@PathVariable("id") Long id) {
         List<BicyclesOfCategory> bicyclesOfCategory = bicyclesOfCategoryService.getBicyclesByCategory(id);
-        List<Bicycle> bicycles = new ArrayList<>();
+        List<BicycleModel> bicyclesResponse = new ArrayList<>();
         for (BicyclesOfCategory bicycleOfCategory : bicyclesOfCategory) {
             Bicycle bicycle = bicycleOfCategory.getBicycle();
-            bicycles.add(bicycle);
+            BicycleModel bicycleModel = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, bicycleModel);
+            bicyclesResponse.add(bicycleModel);
         }
-        Response res = new Response();
-        res.setStatus(200);
-        res.setMessage("Get Bicycles Of Category Successfully!");
-        res.setData(bicycles);
-        return ResponseEntity.ok(res);
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(bicyclesResponse).message("Get All Bicycles Of Category Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 }

@@ -22,6 +22,6 @@ public class BicycleSize {
     @Column(name = "name", columnDefinition = "nvarchar(1000)")
     private String name;
 
-    @OneToMany(mappedBy = "bicycleSize")
+    @OneToMany(mappedBy = "bicycleSize", cascade = CascadeType.ALL)
     private List<BicycleProduct> bicycleProducts;
 }

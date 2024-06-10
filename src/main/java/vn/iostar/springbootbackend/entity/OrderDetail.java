@@ -26,10 +26,6 @@ public class OrderDetail {
     @JoinColumn(name = "id_order", referencedColumnName = "id_order", insertable = false, updatable = false)
     private Order order;
 
-//    @ManyToOne
-//    @JsonBackReference
-//    @JoinColumn(name = "idBicycleProduct", referencedColumnName = "idBicycleProduct")
-//    private BicycleProduct bicycleProduct;
 
     @ManyToOne
     @JoinColumns({

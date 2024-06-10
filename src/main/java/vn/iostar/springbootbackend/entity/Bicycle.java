@@ -1,7 +1,5 @@
 package vn.iostar.springbootbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jdk.dynalink.linker.LinkerServices;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,15 +49,19 @@ public class Bicycle {
     @Column(name = "price")
     private Long price;
 
-    @OneToMany(mappedBy = "bicycle")
+    @Column(name = "image", columnDefinition = "varchar(2000)")
+    private String image;
+
+    @OneToMany(mappedBy = "bicycle", cascade = CascadeType.ALL)
     private List<BicycleProduct> bicycleProducts;
 
-    @OneToMany(mappedBy = "bicycle")
+    @OneToMany(mappedBy = "bicycle", cascade = CascadeType.ALL)
     private List<BicyclesOfCategory> bicyclesOfCategory;
 
-    @OneToMany(mappedBy = "bicycle")
-    private List<BicycleImage> bicycleImages;
+    @OneToMany(mappedBy = "bicycle", cascade = CascadeType.ALL)
+    private List<BicycleThumbnail> bicycleThumbnails;
 
-    @OneToMany(mappedBy = "bicycle")
+    @OneToMany(mappedBy = "bicycle", cascade = CascadeType.ALL)
     private List<BicycleComment> bicycleComments;
+
 }

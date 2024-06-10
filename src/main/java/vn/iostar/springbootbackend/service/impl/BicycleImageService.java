@@ -3,7 +3,7 @@ package vn.iostar.springbootbackend.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.iostar.springbootbackend.entity.Bicycle;
-import vn.iostar.springbootbackend.entity.BicycleImage;
+import vn.iostar.springbootbackend.entity.BicycleThumbnail;
 import vn.iostar.springbootbackend.repository.BicycleImageRepository;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class BicycleImageService {
     private BicycleImageRepository bicycleImageRepository;
 
-    public List<BicycleImage> getImagesByBicycle(Bicycle bicycle) {
+    public List<BicycleThumbnail> getImagesByBicycle(Bicycle bicycle) {
         return bicycleImageRepository.findByBicycle(bicycle);
     }
 }

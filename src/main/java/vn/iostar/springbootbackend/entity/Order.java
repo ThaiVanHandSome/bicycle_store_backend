@@ -44,7 +44,7 @@ public class Order {
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", insertable = false, updatable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
 }

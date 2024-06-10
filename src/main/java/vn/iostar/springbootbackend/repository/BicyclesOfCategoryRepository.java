@@ -16,4 +16,11 @@ public interface BicyclesOfCategoryRepository extends JpaRepository<BicyclesOfCa
 
     @Query("SELECT COUNT(bc) FROM BicyclesOfCategory bc WHERE bc.bicycleCategory = :category")
     int countByBicycleCategory(BicycleCategory category);
+
+    boolean existsByIdBicyclesOfCategory(IdBicyclesOfCategory idBicyclesOfCategory);
+
+    List<BicyclesOfCategory> findByIdBicyclesOfCategory_IdBicycle(Long idBicycle);
+
+    @Query("SELECT b FROM BicyclesOfCategory b WHERE b.idBicyclesOfCategory.idBicycle != :idBicycle AND b.idBicyclesOfCategory.idBicycleCategory = :idBicycleCategory")
+    List<BicyclesOfCategory> findByIdBicycleNotAndIdBicycleCategory(Long idBicycle, Long idBicycleCategory);
 }

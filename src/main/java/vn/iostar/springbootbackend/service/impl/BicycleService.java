@@ -32,6 +32,10 @@ public class BicycleService {
         return bicycleRepository.findAll(Sort.by(Sort.Direction.DESC, field));
     }
 
+    public List<Bicycle> getBicyclesLessOrEqualThan(Long price) {
+        return bicycleRepository.findByPriceLessThanEqual(price);
+    }
+
     public Page<Bicycle> getBicyclesWithPagination(int offset, int pageSize) {
         Page<Bicycle> bicycles = bicycleRepository.findAll(PageRequest.of(offset, pageSize));
         return bicycles;

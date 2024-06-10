@@ -22,10 +22,10 @@ public class BicycleProduct {
     @Column(name = "remain_quantity")
     private int remainQuantity;
 
-    @OneToMany(mappedBy = "bicycleProduct")
+    @OneToMany(mappedBy = "bicycleProduct", cascade = CascadeType.ALL)
     private List<CartDetail> cartDetails;
 
-    @OneToMany(mappedBy = "bicycleProduct")
+    @OneToMany(mappedBy = "bicycleProduct", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
     @ManyToOne

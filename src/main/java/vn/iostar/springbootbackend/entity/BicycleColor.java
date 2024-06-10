@@ -21,6 +21,6 @@ public class BicycleColor {
     @Column(name = "name", columnDefinition = "nvarchar(1000)")
     private String name;
 
-    @OneToMany(mappedBy = "bicycleColor")
+    @OneToMany(mappedBy = "bicycleColor", cascade = CascadeType.ALL)
     private List<BicycleProduct> bicycleProducts;
 }

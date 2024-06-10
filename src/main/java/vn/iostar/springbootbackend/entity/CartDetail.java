@@ -22,11 +22,6 @@ public class CartDetail {
     @JoinColumn(name = "id_cart", referencedColumnName = "id_cart", insertable = false, updatable = false)
     private Cart cart;
 
-//    @ManyToOne
-//    @JsonBackReference
-//    @JoinColumn(name = "idBicycleProduct", referencedColumnName = "idBicycleProduct")
-//    private BicycleProduct bicycleProduct;
-
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "id_bicycle", referencedColumnName = "id_bicycle", insertable = false, updatable = false),

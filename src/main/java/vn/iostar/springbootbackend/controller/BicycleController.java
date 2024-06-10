@@ -2,28 +2,22 @@ package vn.iostar.springbootbackend.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import vn.iostar.springbootbackend.entity.Bicycle;
-import vn.iostar.springbootbackend.entity.BicycleColor;
-import vn.iostar.springbootbackend.entity.BicycleImage;
-import vn.iostar.springbootbackend.entity.BicycleSize;
-import vn.iostar.springbootbackend.model.BicycleColorModel;
-import vn.iostar.springbootbackend.model.BicycleSizeModel;
-import vn.iostar.springbootbackend.model.ProductsResponse;
-import vn.iostar.springbootbackend.model.Response;
-import vn.iostar.springbootbackend.service.impl.BicycleColorService;
-import vn.iostar.springbootbackend.service.impl.BicycleImageService;
-import vn.iostar.springbootbackend.service.impl.BicycleService;
-import vn.iostar.springbootbackend.service.impl.BicycleSizeService;
+import org.springframework.web.bind.annotation.*;
+import vn.iostar.springbootbackend.embeddedId.IdBicycleProduct;
+import vn.iostar.springbootbackend.embeddedId.IdBicyclesOfCategory;
+import vn.iostar.springbootbackend.entity.*;
+import vn.iostar.springbootbackend.model.*;
+import vn.iostar.springbootbackend.model.response.BaseResponse;
+import vn.iostar.springbootbackend.service.impl.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -40,18 +34,29 @@ public class BicycleController {
     @Autowired
     private BicycleColorService bicycleColorService;
 
-    @GetMapping("/bicycle/{id}/images")
-    public ResponseEntity<?> getImagesByBicycle(@PathVariable("id") Long id) {
-        Optional<Bicycle> opt = bicycleService.getBicycleById(id);
-        if(opt.isPresent()) {
-            List<BicycleImage> bicycleImages = bicycleImageService.getImagesByBicycle(opt.get());
-            Response res = new Response();
-            res.setStatus(200);
-            res.setMessage("Get Images Successfully!");
-            res.setData(bicycleImages);
-            return ResponseEntity.ok(res);
+    @Autowired
+    private BicyclesOfCategoryService bicyclesOfCategoryService;
+
+    @Autowired
+    private BicycleCategoryService bicycleCategoryService;
+
+    @Autowired
+    private BicycleProductService bicycleProductService;
+
+    @GetMapping("/bicycle/{idBicycle}")
+    public ResponseEntity<?> getBicycleById(@PathVariable Long idBicycle) {
+        Optional<Bicycle> optBicycle = bicycleService.getBicycleById(idBicycle);
+        if (optBicycle.isPresent()) {
+            Bicycle bicycle = optBicycle.get();
+            BicycleModel bicycleModel = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, bicycleModel);
+            bicycleModel.setThumbnails(new ArrayList<>());
+            for(BicycleThumbnail bicycleThumbnail : bicycle.getBicycleThumbnails()) {
+                bicycleModel.getThumbnails().add(bicycleThumbnail.getSource());
+            }
+            return ResponseEntity.ok(BaseResponse.builder().code(200).status("OK").message("Get Bicycle Successfully!").data(bicycleModel).build());
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(BaseResponse.builder().message("Bicycle Not Found").status("Not Found").code(404).build());
     }
 
     @GetMapping("/bicycle/sizes")
@@ -63,11 +68,8 @@ public class BicycleController {
             BeanUtils.copyProperties(size, model);
             listSizes.add(model);
         }
-        Response res = new Response();
-        res.setStatus(200);
-        res.setMessage("Get All Sizes Successfully!");
-        res.setData(listSizes);
-        return ResponseEntity.ok(res);
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listSizes).message("Get All Sizes Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/bicycle/colors")
@@ -79,44 +81,187 @@ public class BicycleController {
             BeanUtils.copyProperties(color, model);
             listColors.add(model);
         }
-        Response res = new Response();
-        res.setStatus(200);
-        res.setMessage("Get All Colors Successfully!");
-        res.setData(listColors);
-        return ResponseEntity.ok(res);
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listColors).message("Get All Colors Of Bicycle Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/bicycles")
     public ResponseEntity<?> getAllBicycles() {
         List<Bicycle> bicycles = bicycleService.getAllBicycles();
-        ProductsResponse proRes = new ProductsResponse();
-        proRes.setData(bicycles);
-        proRes.setMessage("Get Bicycles Successfully!");
-        proRes.setStatus(200);
-        proRes.setProductsCount(bicycles.size());
-        return ResponseEntity.ok(proRes);
+        List<BicycleModel> listBicycles = new ArrayList<>();
+        for(Bicycle bicycle : bicycles) {
+            BicycleModel model = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, model);
+            listBicycles.add(model);
+        }
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listBicycles).message("Get All Bicycles Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/bicycles/pagination/{offset}/{pageSize}")
     public ResponseEntity<?> getBicyclesWithPagination(@PathVariable("offset") int offset, @PathVariable("pageSize") int pageSize) {
         Page<Bicycle> bicycles = bicycleService.getBicyclesWithPagination(offset, pageSize);
-        ProductsResponse proRes = new ProductsResponse();
-        proRes.setProductsCount(bicycles.getSize());
-        proRes.setData(bicycles);
-        proRes.setMessage("Get Bicycles Successfully!");
-        proRes.setStatus(200);
-        return ResponseEntity.ok(proRes);
+        List<BicycleModel> listBicycles = new ArrayList<>();
+        for(Bicycle bicycle : bicycles) {
+            BicycleModel model = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, model);
+            listBicycles.add(model);
+        }
+        BaseResponse response = BaseResponse.builder().status("message").code(200).data(listBicycles).message("Get All Bicycles Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/bicycles/paginationAndSort/{type}/{offset}/{pageSize}/{field}")
     public ResponseEntity<?> getBicyclesWithPaginationAndSorting(@PathVariable("type") String type,@PathVariable("offset") int offset, @PathVariable("pageSize") int pageSize, @PathVariable("field") String field) {
         Page<Bicycle> bicycles = bicycleService.getBicyclesWithPaginationAndSorting(offset, pageSize, field, type);
-        ProductsResponse proRes = new ProductsResponse();
-        proRes.setProductsCount(bicycles.getSize());
-        proRes.setData(bicycles);
-        proRes.setMessage("Get Bicycles Successfully!");
-        proRes.setStatus(200);
-        return ResponseEntity.ok(proRes);
+        List<BicycleModel> listBicycles = new ArrayList<>();
+        for (Bicycle bicycle : bicycles) {
+            BicycleModel bicycleModel = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, bicycleModel);
+            listBicycles.add(bicycleModel);
+        }
+        BaseResponse response = BaseResponse.builder().status("message").code(200).data(listBicycles).message("Get All Bicycles Successfully!").build();
+        return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/bicycles/filter")
+    public ResponseEntity<?> filterBicycles(@RequestBody BicycleFilterModel model, @RequestParam("page") int page, @RequestParam("size") int size, @RequestParam("sort") String sort) {
+//        if(model.getBicycleCategoriesId().size() == 0 && model.getBicycleSizesId().size() == 0 && model.getBicycleColorsId().size() == 0) {
+//            Page<Bicycle> bicycles = bicycleService.getBicyclesWithPagination(page, size);
+//            List<BicycleModel> listBicycles = new ArrayList<>();
+//            for(Bicycle bicycle : bicycles) {
+//                BicycleModel bicycleModel = new BicycleModel();
+//                BeanUtils.copyProperties(bicycle, bicycleModel);
+//                listBicycles.add(bicycleModel);
+//            }
+//            List<Bicycle> lstBicycle = bicycleService.getAllBicycles();
+//            ProductsResponse productsResponse = ProductsResponse.builder().totalProducts(lstBicycle.size()).bicycles(listBicycles).build();
+//            BaseResponse response = BaseResponse.builder().status("success").code(200).data(productsResponse).message("Get Bicycles With Filter Successfully!").build();
+//            return ResponseEntity.ok(response);
+//        }
+        List<Bicycle> bicyclesRes = new ArrayList<>();
+        List<Bicycle> bicyclesPrice = bicycleService.getBicyclesLessOrEqualThan(model.getMaxPrice());
+        if(sort.equals("asc")) {
+            bicyclesPrice = bicyclesPrice.stream()
+                    .sorted(Comparator.comparingDouble(Bicycle::getPrice))
+                    .collect(Collectors.toList());
+        } else if(sort.equals("desc")) {
+            bicyclesPrice = bicyclesPrice.stream()
+                    .sorted(Comparator.comparingDouble(Bicycle::getPrice).reversed())
+                    .collect(Collectors.toList());
+        }
+        List<Long> bicyclesId = new ArrayList<>();
+        List<Long> categoriesId = model.getBicycleCategoriesId();
+        if(categoriesId.size() != 0) {
+            for(Bicycle bicycle : bicyclesPrice) {
+                for(Long idCategory : categoriesId) {
+                    if(bicyclesOfCategoryService.checkBicyclesOfCategoryExist(new IdBicyclesOfCategory(bicycle.getIdBicycle(), idCategory))) {
+                        if(!bicyclesId.contains(bicycle.getIdBicycle())) {
+                            bicyclesId.add(bicycle.getIdBicycle());
+                        }
+                    }
+                }
+            }
+        } else {
+            for(Bicycle bicycle : bicyclesPrice) {
+                bicyclesId.add(bicycle.getIdBicycle());
+            }
+        }
+
+        List<Long> colorsId = model.getBicycleColorsId();
+        List<Long> sizesId = model.getBicycleSizesId();
+        List<Long> bicyclesIdFinal;
+
+        boolean checkColor = !colorsId.isEmpty();
+        boolean checkSize = !sizesId.isEmpty();
+
+        if(!checkColor && !checkSize) {
+            bicyclesIdFinal = new ArrayList<>(bicyclesId);
+        } else {
+            bicyclesIdFinal = new ArrayList<>();
+            if(checkColor && checkSize) {
+                for(Long idBicycle : bicyclesId) {
+                    for(Long idColor : colorsId) {
+                        for(Long idSize : sizesId) {
+                            IdBicycleProduct idBicycleProduct = new IdBicycleProduct(idBicycle, idSize, idColor);
+                            if(bicycleProductService.checkExistIdBicycleProduct(idBicycleProduct)) {
+                                if(!bicyclesIdFinal.contains(idBicycle)) {
+                                    bicyclesIdFinal.add(idBicycle);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (!checkColor && checkSize) {
+                for(Long idBicycle : bicyclesId) {
+                    for(Long idSize : sizesId) {
+                        if(bicycleProductService.checkExistByBicycleAndSize(idBicycle, idSize)) {
+                            if(!bicyclesIdFinal.contains(idBicycle)) {
+                                bicyclesIdFinal.add(idBicycle);
+                            }
+                        }
+                    }
+                }
+            } else if (checkColor && !checkSize) {
+                for(Long idBicycle : bicyclesId) {
+                    for(Long idColor : colorsId) {
+                        if(bicycleProductService.checkExistByBicycleAndColor(idBicycle, idColor)) {
+                            if(!bicyclesIdFinal.contains(idBicycle)) {
+                                bicyclesIdFinal.add(idBicycle);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for(Long id : bicyclesIdFinal) {
+            Optional<Bicycle> opt = bicycleService.getBicycleById(id);
+            opt.ifPresent(bicyclesRes::add);
+        }
+
+        int fromIdx = page * size;
+        int totalBicycles = bicyclesRes.size();
+        int toIdx = Math.min(fromIdx + size, bicyclesRes.size());
+        List<Bicycle> newBicycleRes = bicyclesRes.subList(fromIdx, toIdx);
+
+        List<BicycleModel> listBicycleModels = new ArrayList<>();
+        for(Bicycle bicycle : newBicycleRes) {
+            BicycleModel bicycleModel = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, bicycleModel);
+            listBicycleModels.add(bicycleModel);
+        }
+        ProductsResponse productsResponse = ProductsResponse.builder().totalProducts(totalBicycles).bicycles(listBicycleModels).build();
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(productsResponse).message("Get Bicycles With Filter Successfully!").build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/bicycle/{idBicycle}/categories")
+    public ResponseEntity<?> getAllCategoriesOfBicycle(@PathVariable("idBicycle") Long idBicycle) {
+        List<BicyclesOfCategory> bicyclesOfCategories = bicyclesOfCategoryService.getAllCategoriesOfBicycle(idBicycle);
+        List<BicycleOfCategoryModel> bicycleOfCategoryModels = new ArrayList<BicycleOfCategoryModel>();
+        for(BicyclesOfCategory bicyclesOfCategory : bicyclesOfCategories) {
+            Optional<BicycleCategory> optBicycleCategory = bicycleCategoryService.getCategoryById(bicyclesOfCategory.getBicycleCategory().getIdBicycleCategory());
+            if(optBicycleCategory.isPresent()) {
+                BicycleCategory bicycleCategory = optBicycleCategory.get();
+                BicycleOfCategoryModel bicycleOfCategoryModel = new BicycleOfCategoryModel();
+                bicycleOfCategoryModel.setIdCategory(bicycleCategory.getIdBicycleCategory());
+                bicycleOfCategoryModel.setName(bicycleCategory.getName());
+                bicycleOfCategoryModels.add(bicycleOfCategoryModel);
+            }
+        }
+        BaseResponse response = BaseResponse.builder().status("success").code(200).message("Get All Categories Of Bicycle Successfully!").data(bicycleOfCategoryModels).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/bicycle/{idBicycle}/relevant")
+    public ResponseEntity<?> getFourBicycleRelevant(@PathVariable("idBicycle") Long idBicycle) {
+        List<BicyclesOfCategory> bicyclesOfCategories = bicyclesOfCategoryService.getAllCategoriesOfBicycle(idBicycle);
+        List<BicyclesOfCategory> bicyclesOfCategoriesRelevant = bicyclesOfCategoryService.findByIdBicycleNotAndIdBicycleCategory(idBicycle, bicyclesOfCategories.get(0).getIdBicyclesOfCategory().getIdBicycleCategory());
+        if(bicyclesOfCategoriesRelevant.size() > 4) {
+            bicyclesOfCategoriesRelevant = bicyclesOfCategoriesRelevant.subList(0, 3);
+        }
+        BaseResponse response = BaseResponse.builder().status("success").code(200).message("Get All Bicycles Relevant Successfully!").data(bicyclesOfCategoriesRelevant).build();
+        return ResponseEntity.ok(response);
+    }
 }

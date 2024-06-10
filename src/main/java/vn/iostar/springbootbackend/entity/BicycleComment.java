@@ -28,6 +28,11 @@ public class BicycleComment {
 
     @ManyToOne
     @JsonBackReference
+    @JoinColumn(name = "id_user", referencedColumnName = "id_user", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "id_bicycle", referencedColumnName = "id_bicycle", insertable = false, updatable = false)
     private Bicycle bicycle;
 }

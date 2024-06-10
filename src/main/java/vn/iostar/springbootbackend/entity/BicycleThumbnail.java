@@ -11,13 +11,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "bicycle_images")
-public class BicycleImage {
+@Table(name = "bicycle_thumbnails")
+public class BicycleThumbnail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_bicycle_image")
-    private Long idBicycleImage;
+    @Column(name = "id_bicycle_thumbnail")
+    private Long idBicycleThumbnail;
 
     @Column(name = "source", columnDefinition = "varchar(10000)")
     private String source;

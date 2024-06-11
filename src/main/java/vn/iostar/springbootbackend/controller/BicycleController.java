@@ -259,9 +259,16 @@ public class BicycleController {
         List<BicyclesOfCategory> bicyclesOfCategories = bicyclesOfCategoryService.getAllCategoriesOfBicycle(idBicycle);
         List<BicyclesOfCategory> bicyclesOfCategoriesRelevant = bicyclesOfCategoryService.findByIdBicycleNotAndIdBicycleCategory(idBicycle, bicyclesOfCategories.get(0).getIdBicyclesOfCategory().getIdBicycleCategory());
         if(bicyclesOfCategoriesRelevant.size() > 4) {
-            bicyclesOfCategoriesRelevant = bicyclesOfCategoriesRelevant.subList(0, 3);
+            bicyclesOfCategoriesRelevant = bicyclesOfCategoriesRelevant.subList(0, 4);
         }
-        BaseResponse response = BaseResponse.builder().status("success").code(200).message("Get All Bicycles Relevant Successfully!").data(bicyclesOfCategoriesRelevant).build();
+        List<BicycleModel> bicycleModels = new ArrayList<>();
+        for(BicyclesOfCategory bicyclesOfCategory : bicyclesOfCategoriesRelevant) {
+            Bicycle bicycle = bicyclesOfCategory.getBicycle();
+            BicycleModel bicycleModel = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, bicycleModel);
+            bicycleModels.add(bicycleModel);
+        }
+        BaseResponse response = BaseResponse.builder().status("success").code(200).message("Get All Bicycles Relevant Successfully!").data(bicycleModels).build();
         return ResponseEntity.ok(response);
     }
 }

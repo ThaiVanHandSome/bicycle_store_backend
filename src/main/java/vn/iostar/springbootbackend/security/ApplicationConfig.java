@@ -1,4 +1,4 @@
-package vn.iostar.springbootbackend.security.jwt;
+package vn.iostar.springbootbackend.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found!"));
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found!"));
     }
 
     @Bean

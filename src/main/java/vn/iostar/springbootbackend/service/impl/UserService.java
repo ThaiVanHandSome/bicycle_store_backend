@@ -50,4 +50,12 @@ public class UserService {
     public void deleteById(Long aLong) {
         userRepository.deleteById(aLong);
     }
+
+    public int enableUser(String email) {
+        return userRepository.enableUser(email);
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

@@ -1,4 +1,4 @@
-package vn.iostar.springbootbackend.security.jwt;
+package vn.iostar.springbootbackend.security;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +36,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserEmail(jwt);
+        userEmail = jwtService.extractUserEmail(jwt, response);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.isTokenValid(jwt, userDetails)) {
+            if(jwtService.isTokenValid(jwt, userDetails, response)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

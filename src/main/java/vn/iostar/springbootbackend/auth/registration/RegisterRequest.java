@@ -1,9 +1,10 @@
-package vn.iostar.springbootbackend.auth;
+package vn.iostar.springbootbackend.auth.registration;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vn.iostar.springbootbackend.entity.Role;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +16,5 @@ public class RegisterRequest {
     private String email;
     private String password;
     private int gender;
-
+    private String avatar;
 }

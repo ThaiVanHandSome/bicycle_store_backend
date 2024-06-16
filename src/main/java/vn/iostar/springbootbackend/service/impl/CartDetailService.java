@@ -6,6 +6,8 @@ import vn.iostar.springbootbackend.embeddedId.IdCartDetail;
 import vn.iostar.springbootbackend.entity.CartDetail;
 import vn.iostar.springbootbackend.repository.CartDetailRepository;
 
+import java.util.List;
+
 @Service
 public class CartDetailService {
     @Autowired
@@ -17,5 +19,9 @@ public class CartDetailService {
 
     public void addToCart(CartDetail cartDetail) {
         cartDetailRepository.save(cartDetail);
+    }
+
+    public List<CartDetail> getAllProductsByIdCart(Long idCart) {
+        return cartDetailRepository.findByIdCartDetail_IdCart(idCart);
     }
 }

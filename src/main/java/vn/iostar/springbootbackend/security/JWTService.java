@@ -3,8 +3,11 @@ package vn.iostar.springbootbackend.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import vn.iostar.springbootbackend.entity.User;
+import vn.iostar.springbootbackend.service.impl.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,6 +19,9 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
+
+    @Autowired
+    private UserService userService;
 
     private static final String SECRET_KEY = "WJCHZdb4R1p+qpHJ9/bwVLaiBWxz1wFbUDiZvWpDNLvXROOzueEqj5o/6x2s2v71\n";
     public String extractUserEmail(String token, HttpServletResponse response) throws IOException {
@@ -31,7 +37,12 @@ public class JWTService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateAccessToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        User user = userService.getUserByEmail(userDetails.getUsername()).get();
+        extraClaims.put("firstName", user.getFirstName());
+        extraClaims.put("lastName", user.getLastName());
+        extraClaims.put("avatar", user.getAvatar());
+        return generateAccessToken(extraClaims, userDetails);
     }
 
     public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {

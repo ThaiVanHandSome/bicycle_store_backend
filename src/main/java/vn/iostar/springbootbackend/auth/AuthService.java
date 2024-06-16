@@ -23,6 +23,7 @@ import vn.iostar.springbootbackend.service.impl.ConfirmationTokenService;
 import vn.iostar.springbootbackend.service.impl.RefreshTokenService;
 import vn.iostar.springbootbackend.service.impl.UserService;
 
+import javax.naming.AuthenticationException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -96,12 +97,16 @@ public class AuthService {
     }
 
     public BaseResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception ex) {
+            return BaseResponse.builder().code(400).status("error").message("Email Or Password Wrong!").build();
+        }
         Optional<User> opt = repository.findByEmail(request.getEmail());
         if(opt.isEmpty()) {
             return BaseResponse.builder().code(400).status("error").message("Email Or Password Wrong!").build();

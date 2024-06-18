@@ -47,7 +47,7 @@ public class CartController {
         boolean checkExist = bicycleProductService.checkExistIdBicycleProduct(idBicycleProduct);
         BaseResponse response = new BaseResponse();
         if (!checkExist) {
-            response = BaseResponse.builder().code(200).status("success").data(false).message("Sản phẩm này hiện đã hết hàng. Quý khách vui lòng chọn sản phẩm khác!").build();
+            response = BaseResponse.builder().code(200).status("success").data(false).message("This product is currently out of stock. Please choose another product!").build();
             return ResponseEntity.ok(response);
         } else {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -62,15 +62,15 @@ public class CartController {
                     idCartDetail.setIdCart(optCart.get().getIdCart());
                     boolean checkExistedInCart = cartDetailService.checkExistByIdCartDetail(idCartDetail);
                     if (checkExistedInCart) {
-                        response = BaseResponse.builder().code(200).status("success").data(false).message("Sản phẩm này hiện đã có trong giỏ hàng!").build();
+                        response = BaseResponse.builder().code(200).status("success").data(false).message("This product have existed your cart!").build();
                     } else {
                         CartDetail cartDetail = new CartDetail();
                         cartDetail.setIdCartDetail(idCartDetail);
                         cartDetailService.addToCart(cartDetail);
-                        response = BaseResponse.builder().code(200).status("success").data(true).message("Thêm sản phẩm vào giỏ hàng thành công!").build();
+                        response = BaseResponse.builder().code(200).status("success").data(true).message("Add product to your cart successfully!").build();
                     }
                 } else {
-                    response = BaseResponse.builder().code(401).status("error").data(false).message("Cart does not exist!").build();
+                    response = BaseResponse.builder().code(401).status("error").data(false).message("Cart not found!").build();
                 }
 
             } else {
@@ -103,13 +103,32 @@ public class CartController {
                     cartResponse.setQuantity(cartDetail.getBicycleProduct().getRemainQuantity());
                     cartResponses.add(cartResponse);
                 }
-                response = BaseResponse.builder().code(200).status("success").data(cartResponses).message("Get All Products Of Cart Successfully!").build();
+                response = BaseResponse.builder().code(200).status("success").data(cartResponses).message("Get all products of cart successfully!").build();
                 return ResponseEntity.ok(response);
             }
             response = BaseResponse.builder().status("error").code(400).message("Cart not found!").build();
             return ResponseEntity.ok(response);
         }
         response = BaseResponse.builder().status("not-author").code(401).message("You do not authorize!").build();
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/cart")
+    public ResponseEntity<?> deleteProduct(@RequestBody IdBicycleProduct idBicycleProduct) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        User user = userService.getUserByEmail(email).get();
+        Optional<Cart> optCart = cartService.getCartByUser(user);
+        BaseResponse response = new BaseResponse();
+        if(optCart.isPresent()) {
+            IdCartDetail idCartDetail = new IdCartDetail();
+            BeanUtils.copyProperties(idBicycleProduct, idCartDetail);
+            idCartDetail.setIdCart(optCart.get().getIdCart());
+            cartDetailService.deleteProduct(idCartDetail);
+            response = BaseResponse.builder().code(200).status("success").message("Delete product in cart successfully!").build();
+            return ResponseEntity.ok(response);
+        }
+        response = BaseResponse.builder().code(400).status("error").message("Cart not found!").build();
         return ResponseEntity.ok(response);
     }
 }

@@ -51,6 +51,9 @@ public class User implements UserDetails {
     @Column(name = "day_created")
     private LocalDateTime dayCreated;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "is_active")
     private boolean isActive = false;
 

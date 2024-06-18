@@ -72,6 +72,8 @@ public class AuthService {
                     .lastName(request.getLastName())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
+                    .phoneNumber(request.getPhoneNumber())
+                    .dayCreated(LocalDateTime.now())
                     .avatar("https://th.bing.com/th/id/OIP.bWllJuCbia6Vbt18CzJWQQHaHY?w=1005&h=1002&rs=1&pid=ImgDetMain")
                     .role(Role.USER)
                     .provider(Provider.DATABASE)

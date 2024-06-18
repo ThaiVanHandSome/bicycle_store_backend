@@ -39,7 +39,7 @@ public class BicycleCategoryController {
             model.setCountOfBicycles(cnt);
             listCategories.add(model);
         }
-        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listCategories).message("Get All Categories Successfully!").errors(null).build();
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listCategories).message("Get all categories successfully!").errors(null).build();
         return ResponseEntity.ok(response);
     }
 
@@ -53,7 +53,7 @@ public class BicycleCategoryController {
             BeanUtils.copyProperties(bicycle, bicycleModel);
             bicyclesResponse.add(bicycleModel);
         }
-        BaseResponse response = BaseResponse.builder().status("success").code(200).data(bicyclesResponse).message("Get All Bicycles Of Category Successfully!").build();
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(bicyclesResponse).message("Get all bicycles of category successfully!").build();
         return ResponseEntity.ok(response);
     }
 }

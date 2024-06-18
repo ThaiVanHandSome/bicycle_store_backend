@@ -24,4 +24,8 @@ public class CartDetailService {
     public List<CartDetail> getAllProductsByIdCart(Long idCart) {
         return cartDetailRepository.findByIdCartDetail_IdCart(idCart);
     }
+
+    public void deleteProduct(IdCartDetail idCartDetail) {
+        cartDetailRepository.deleteById(idCartDetail);
+    }
 }

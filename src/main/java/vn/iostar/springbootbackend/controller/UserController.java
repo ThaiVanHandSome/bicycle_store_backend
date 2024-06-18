@@ -37,30 +37,30 @@ public class UserController {
         Optional<User> optUserGetByEmail = userService.getUserByEmail(payload.getEmail());
         BaseResponse response = new BaseResponse();
         if (optUserGetByEmail.isEmpty()) {
-            response = BaseResponse.builder().status("error").code(400).message("User Not Found!").build();
+            response = BaseResponse.builder().status("error").code(400).message("User not found!").build();
             return ResponseEntity.ok(response);
         }
         Optional<ConfirmationToken> optConfirmationToken = confirmationTokenService.getToken(payload.getToken());
         if (optConfirmationToken.isEmpty()) {
-            response = BaseResponse.builder().status("not-author").code(401).message("You Do Not Authorize!").build();
+            response = BaseResponse.builder().status("not-author").code(401).message("You do not authorize!").build();
             return ResponseEntity.ok(response);
         }
         ConfirmationToken confirmationToken = optConfirmationToken.get();
         LocalDateTime expiredAt = confirmationToken.getExpiredAt();
         if(expiredAt.isBefore(LocalDateTime.now())) {
-            response = BaseResponse.builder().status("not-author").code(401).message("You Do Not Authorize!").build();
+            response = BaseResponse.builder().status("not-author").code(401).message("You do not authorize!").build();
             return ResponseEntity.ok(response);
         }
         User userGetByEmail = optUserGetByEmail.get();
         User userGetByToken = optConfirmationToken.get().getUser();
         if(!Objects.equals(userGetByEmail.getIdUser(), userGetByToken.getIdUser())) {
-            response = BaseResponse.builder().status("not-author").code(401).message("You Do Not Authorize!").build();
+            response = BaseResponse.builder().status("not-author").code(401).message("You do not authorize!").build();
             return ResponseEntity.ok(response);
         }
         String passwordEncoded = passwordEncoder.encode(payload.getPassword());
         userGetByEmail.setPassword(passwordEncoded);
         userService.saveUser(userGetByEmail);
-        response = BaseResponse.builder().status("success").code(200).message("Password Changed!").build();
+        response = BaseResponse.builder().status("success").code(200).message("Password changed!").build();
         return ResponseEntity.ok(response);
     }
 }

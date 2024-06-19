@@ -42,6 +42,7 @@ public class JWTService {
         extraClaims.put("firstName", user.getFirstName());
         extraClaims.put("lastName", user.getLastName());
         extraClaims.put("avatar", user.getAvatar());
+        extraClaims.put("phoneNumber", user.getPhoneNumber());
         return generateAccessToken(extraClaims, userDetails);
     }
 

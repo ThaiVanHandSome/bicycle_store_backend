@@ -6,7 +6,7 @@ import vn.iostar.springbootbackend.entity.BicycleProduct;
 
 import java.util.List;
 
-public interface BicycleProductRepository extends JpaRepository<BicycleProduct, Long> {
+public interface BicycleProductRepository extends JpaRepository<BicycleProduct, IdBicycleProduct> {
     public boolean existsByIdBicycleProduct(IdBicycleProduct idBicycleProduct);
 
     boolean existsByIdBicycleProduct_IdBicycleAndIdBicycleProduct_IdBicycleSize(Long idBicycle, Long idBicycleSize);

@@ -54,7 +54,7 @@ public class BicycleController {
             for(BicycleThumbnail bicycleThumbnail : bicycle.getBicycleThumbnails()) {
                 bicycleModel.getThumbnails().add(bicycleThumbnail.getSource());
             }
-            return ResponseEntity.ok(BaseResponse.builder().code(200).status("OK").message("Get bicycle successfully!").data(bicycleModel).build());
+            return ResponseEntity.ok(BaseResponse.builder().code(200).status("success").message("Get bicycle successfully!").data(bicycleModel).build());
         }
         return ResponseEntity.ok(BaseResponse.builder().message("Bicycle not found!").status("error").code(404).build());
     }
@@ -107,7 +107,7 @@ public class BicycleController {
             BeanUtils.copyProperties(bicycle, model);
             listBicycles.add(model);
         }
-        BaseResponse response = BaseResponse.builder().status("message").code(200).data(listBicycles).message("Get all bicycles successfully!").build();
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listBicycles).message("Get all bicycles successfully!").build();
         return ResponseEntity.ok(response);
     }
 
@@ -120,7 +120,7 @@ public class BicycleController {
             BeanUtils.copyProperties(bicycle, bicycleModel);
             listBicycles.add(bicycleModel);
         }
-        BaseResponse response = BaseResponse.builder().status("message").code(200).data(listBicycles).message("Get all bicycles successfully!").build();
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listBicycles).message("Get all bicycles successfully!").build();
         return ResponseEntity.ok(response);
     }
 

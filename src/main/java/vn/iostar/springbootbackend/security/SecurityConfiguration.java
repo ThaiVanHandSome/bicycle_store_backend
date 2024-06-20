@@ -37,7 +37,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .authorizeHttpRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers("/api/v1/auth/**", "/api/v1/bicycle/**", "/api/v1/bicycles/**", "/api/v1/categories/**", "/api/v1/category/**").permitAll()
+                .antMatchers("/api/v1/auth/**", "/api/v1/bicycle/**", "/api/v1/bicycles/**", "/api/v1/categories/**", "/api/v1/category/**", "/api/v1/pay-methods").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

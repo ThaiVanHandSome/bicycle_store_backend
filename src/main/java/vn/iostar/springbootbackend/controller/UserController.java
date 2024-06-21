@@ -129,4 +129,22 @@ public class UserController {
         response = BaseResponse.builder().status("error").code(400).message("User not found!").build();
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/user/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody String password) {
+        BaseResponse response = new BaseResponse();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            User user = userService.getUserByEmail(email).get();
+            password = password.replaceAll("\"", "");
+            user.setPassword(passwordEncoder.encode(password));
+            userService.saveUser(user);
+            response = BaseResponse.builder().status("success").code(200).message("Update password successfully!").build();
+            return ResponseEntity.ok(response);
+        }
+        response = BaseResponse.builder().status("error").code(400).message("User not found!").build();
+        return ResponseEntity.ok(response);
+    }
 }

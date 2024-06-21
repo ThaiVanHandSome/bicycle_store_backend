@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,7 @@ public class User implements UserDetails {
     private int gender;
 
     @Column(name = "birthday")
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
     @Column(name = "avatar", columnDefinition = "varchar(1000)")
     private String avatar;

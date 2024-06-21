@@ -38,11 +38,6 @@ public class JWTService {
 
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        User user = userService.getUserByEmail(userDetails.getUsername()).get();
-        extraClaims.put("firstName", user.getFirstName());
-        extraClaims.put("lastName", user.getLastName());
-        extraClaims.put("avatar", user.getAvatar());
-        extraClaims.put("phoneNumber", user.getPhoneNumber());
         return generateAccessToken(extraClaims, userDetails);
     }
 
@@ -53,7 +48,7 @@ public class JWTService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 1000 * 10))
                 .signWith(SignatureAlgorithm.HS256, getSignInKey())
                 .compact();
     }

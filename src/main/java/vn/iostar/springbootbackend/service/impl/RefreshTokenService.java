@@ -8,6 +8,7 @@ import vn.iostar.springbootbackend.repository.RefreshTokenRepository;
 import vn.iostar.springbootbackend.repository.UserRepository;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,10 +24,11 @@ public class RefreshTokenService {
             User user = optUser.get();
             Optional<RefreshToken> optRefreshToken = refreshTokenRepository.findByUser(user);
             optRefreshToken.ifPresent(token -> refreshTokenRepository.delete(token));
+            Instant expiryDate = Instant.now().plus(365, ChronoUnit.DAYS);
             RefreshToken refreshToken = RefreshToken.builder()
                     .user(userRepository.findByEmail(email).get())
                     .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(600000))
+                    .expiryDate(expiryDate)
                     .build();
             return refreshTokenRepository.save(refreshToken);
         }

@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BicycleProductModel {
+public class BicycleProductRequestModel {
     private Long idBicycle;
     private Long idBicycleSize;
     private Long idBicycleColor;

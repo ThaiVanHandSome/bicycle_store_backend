@@ -10,13 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import vn.iostar.springbootbackend.embeddedId.IdBicycleProduct;
 import vn.iostar.springbootbackend.embeddedId.IdOrderDetail;
 import vn.iostar.springbootbackend.entity.*;
-import vn.iostar.springbootbackend.model.BicycleProductModel;
+import vn.iostar.springbootbackend.model.BicycleProductRequestModel;
+import vn.iostar.springbootbackend.model.BicycleProductResponseModel;
+import vn.iostar.springbootbackend.model.OrderDetailModel;
 import vn.iostar.springbootbackend.model.OrderModel;
 import vn.iostar.springbootbackend.model.response.BaseResponse;
 import vn.iostar.springbootbackend.service.impl.*;
 
-import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -75,7 +78,7 @@ public class OrderController {
                 .payMethod(payMethodService.getById(orderModel.getIdPayMethod()).get())
                 .build();
         Order newOrder = orderService.saveOrder(order);
-        for(BicycleProductModel bicycleProductModel : orderModel.getBicycleProductModels()) {
+        for(BicycleProductRequestModel bicycleProductModel : orderModel.getBicycleProductModels()) {
             IdOrderDetail idOrderDetail = new IdOrderDetail();
             BeanUtils.copyProperties(bicycleProductModel, idOrderDetail);
             idOrderDetail.setIdOrder(newOrder.getIdOrder());
@@ -83,6 +86,43 @@ public class OrderController {
             orderDetailService.saveOrderDetail(orderDetail);
         }
         BaseResponse response = BaseResponse.builder().code(200).status("success").message("Order Successfully!").build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/purchases")
+    public ResponseEntity<?> getAllOrders(@RequestParam("page") int page, @RequestParam("size") int size) {
+        BaseResponse response = BaseResponse.builder().code(200).status("success").message("Get orders successfully!").data(orderDetailService.getAllOrderDetail(page, size)).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/purchase/{idOrder}")
+    public ResponseEntity<?> getAllOrders(@PathVariable("idOrder") Long idOrder) {
+        Optional<Order> order = orderService.getOrderById(idOrder);
+        List<BicycleProductResponseModel> bicycleProductResponseModels = new ArrayList<>();
+        OrderDetailModel orderDetailModel = new OrderDetailModel();
+        if(order.isPresent()) {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsById(idOrder);
+            for (OrderDetail orderDetail : orderDetails) {
+                BicycleProductResponseModel bicycleProductResponseModel = BicycleProductResponseModel.builder()
+                        .bicycleImage(orderDetail.getBicycleProduct().getBicycle().getImage())
+                        .bicyclePrice(orderDetail.getBicycleProduct().getBicycle().getPrice())
+                        .bicycleName(orderDetail.getBicycleProduct().getBicycle().getName())
+                        .bicycleColorName(orderDetail.getBicycleProduct().getBicycleColor().getName())
+                        .bicycleSizeName(orderDetail.getBicycleProduct().getBicycleSize().getName())
+                        .totalQuantity(orderDetail.getQuantity())
+                        .build();
+                bicycleProductResponseModels.add(bicycleProductResponseModel);
+            }
+            orderDetailModel.setBicycleProductModels(bicycleProductResponseModels);
+            orderDetailModel.setPayMethod(order.get().getPayMethod().getName());
+            orderDetailModel.setOrderedAt(order.get().getDayOrdered());
+            orderDetailModel.setIdOrder(order.get().getIdOrder());
+            orderDetailModel.setOrderState(order.get().getOrderState());
+            BeanUtils.copyProperties(order.get(), orderDetailModel);
+            BaseResponse response = BaseResponse.builder().code(200).status("success").data(orderDetailModel).message("Get order successfully!").build();
+            return ResponseEntity.ok(response);
+        }
+        BaseResponse response = BaseResponse.builder().code(400).status("error").message("Order not found!").build();
         return ResponseEntity.ok(response);
     }
 }

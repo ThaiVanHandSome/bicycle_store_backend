@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import vn.iostar.springbootbackend.embeddedId.IdOrderDetail;
 
 import javax.persistence.*;

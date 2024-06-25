@@ -86,7 +86,9 @@ public class UserController {
             User user = userService.getUserByEmail(email).get();
             UserModel userModel = new UserModel();
             BeanUtils.copyProperties(user, userModel);
-            userModel.setBirthDay(user.getBirthDay().toString());
+            if(user.getBirthDay() != null) {
+                userModel.setBirthDay(user.getBirthDay().toString());
+            }
             response = BaseResponse.builder().status("success").code(200).message("Get user successfully!").data(userModel).build();
             return ResponseEntity.ok(response);
         }

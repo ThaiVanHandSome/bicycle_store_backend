@@ -42,6 +42,8 @@ public class BicycleController {
 
     @Autowired
     private BicycleProductService bicycleProductService;
+    @Autowired
+    private OrderDetailService orderDetailService;
 
     @GetMapping("/bicycle/{idBicycle}")
     public ResponseEntity<?> getBicycleById(@PathVariable Long idBicycle) {

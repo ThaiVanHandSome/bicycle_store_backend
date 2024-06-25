@@ -2,6 +2,7 @@ package vn.iostar.springbootbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "bicycle_comments")
 public class BicycleComment {
@@ -28,11 +30,11 @@ public class BicycleComment {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "id_user", referencedColumnName = "id_user", insertable = false, updatable = false)
+    @JoinColumn(name = "id_user", referencedColumnName = "id_user")
     private User user;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "id_bicycle", referencedColumnName = "id_bicycle", insertable = false, updatable = false)
+    @JoinColumn(name = "id_bicycle", referencedColumnName = "id_bicycle")
     private Bicycle bicycle;
 }

@@ -55,7 +55,7 @@ public class SecurityConfiguration {
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("http://localhost:3000");
         config.addAllowedOriginPattern("http://10.0.2.2:8989");
-        config.addAllowedOriginPattern("http://192.168.110.122:8989");
+        config.addAllowedOriginPattern("https://bicycle-store-frontend.vercel.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

@@ -283,6 +283,7 @@ public class BicycleController {
             BeanUtils.copyProperties(bicycle, model);
             listBicycles.add(model);
         }
-        return ResponseEntity.ok(listBicycles);
+        BaseResponse response = BaseResponse.builder().status("success").code(200).data(listBicycles).message("Search successfully!").build();
+        return ResponseEntity.ok(response);
     }
 }

@@ -51,4 +51,8 @@ public class BicycleService {
         return bicycles;
     }
 
+    public List<Bicycle> findByNameIgnoreCaseAndIgnoreAccents(String name) {
+        return bicycleRepository.findByNameIgnoreCaseAndIgnoreAccents("%" + name + "%");
+    }
+
 }

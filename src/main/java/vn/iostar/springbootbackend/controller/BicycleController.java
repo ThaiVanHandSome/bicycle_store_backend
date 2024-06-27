@@ -273,4 +273,16 @@ public class BicycleController {
         BaseResponse response = BaseResponse.builder().status("success").code(200).message("Get all bicycles relevant successfully!").data(bicycleModels).build();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/bicycle/search")
+    public ResponseEntity<?> searchBicycle(@RequestParam String name) {
+        List<Bicycle> searchedBicycles = bicycleService.findByNameIgnoreCaseAndIgnoreAccents(name);
+        List<BicycleModel> listBicycles = new ArrayList<>();
+        for(Bicycle bicycle : searchedBicycles) {
+            BicycleModel model = new BicycleModel();
+            BeanUtils.copyProperties(bicycle, model);
+            listBicycles.add(model);
+        }
+        return ResponseEntity.ok(listBicycles);
+    }
 }
